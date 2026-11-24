@@ -122,7 +122,7 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
 .section h2 {
   font: 700 clamp(1.75rem, 3vw, 2.6rem)/1.2 var(--serif);
   letter-spacing: -.03em;
-  text-align: center;
+  text-align: left;
   text-wrap: balance;
 }
 .section h3 { font-size: 1.15rem; font-weight: 750; line-height: 1.36; letter-spacing: -.02em; }
