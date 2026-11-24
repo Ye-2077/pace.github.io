@@ -10,7 +10,8 @@
   --accent-dark: #233f62;
   --accent-soft: #eaf1f9;
   --radius: .8rem;
-  --sans: system-ui, -apple-system, sans-serif;
+  --serif: "Iowan Old Style", Georgia, serif;
+  --sans: "Avenir Next", system-ui, sans-serif;
   font: 1rem/1.68 var(--sans);
   color: var(--ink);
   background: var(--canvas);
@@ -46,7 +47,7 @@ img, video { display: block; width: 100%; height: auto; }
 .hero h1 {
   margin-inline: auto;
   max-width: 59rem;
-  font: 750 clamp(2rem, 4.1vw, 3.5rem)/1.15 var(--sans);
+  font: 700 clamp(2rem, 4.1vw, 3.5rem)/1.15 var(--serif);
   letter-spacing: -.045em;
   text-wrap: balance;
 }
@@ -115,7 +116,7 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
   background: var(--soft);
 }
 .section h2 {
-  font: 750 clamp(1.75rem, 3vw, 2.6rem)/1.2 var(--sans);
+  font: 700 clamp(1.75rem, 3vw, 2.6rem)/1.2 var(--serif);
   letter-spacing: -.03em;
   text-align: center;
   text-wrap: balance;
@@ -230,7 +231,7 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
 .experiment-metric strong {
   display: block;
   color: var(--accent-dark);
-  font: 750 1.7rem/1 var(--sans);
+  font: 700 1.7rem/1 var(--serif);
   font-variant-numeric: lining-nums tabular-nums;
 }
 .experiment-metric span { display: block; margin-top: .15rem; color: var(--muted); font-size: .875rem; }
@@ -271,7 +272,7 @@ td:last-child, thead th:last-child { background: var(--accent-soft); color: var(
 
 .site-footer { margin-top: clamp(3rem, 7vw, 5.2rem); border-top: 1px solid var(--line); color: var(--ink); background: var(--soft); }
 .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.3rem; }
-.footer-row span { font: 750 1.15rem/1 var(--sans); }
+.footer-row span { font: 700 1.15rem/1 var(--serif); }
 .footer-row a { color: inherit; font-size: .9rem; }
 
 @media (min-width: 53rem) {
