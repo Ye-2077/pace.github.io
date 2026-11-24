@@ -123,9 +123,9 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
   text-wrap: balance;
 }
 .section h3 { font-size: 1.15rem; font-weight: 750; line-height: 1.36; letter-spacing: -.02em; }
-.section > p { max-width: 79ch; margin-top: .65rem; color: var(--muted); }
-.section > .lede { margin-top: .9rem; color: var(--ink); font-weight: 650; font-size: 1.08rem; }
-#abstract > p { max-width: none; margin-top: 1.15rem; color: var(--ink); line-height: 1.75; }
+.section > p { margin-top: .65rem; color: var(--muted); }
+.section > .lede { max-width: 79ch; margin-top: .9rem; color: var(--ink); font-weight: 650; font-size: 1.08rem; }
+#abstract > p { margin-top: 1.15rem; color: var(--ink); line-height: 1.75; }
 #abstract .research-figure { padding: .85rem; box-shadow: none; }
 
 .research-figure {
@@ -179,7 +179,6 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
   background: var(--soft);
 }
 .method-steps > article > p { margin-top: .65rem; color: var(--muted); }
-.method-execution p { max-width: 86ch; }
 
 .experiments {
   margin-top: 1.35rem;
@@ -252,7 +251,7 @@ thead th { background: var(--soft); }
 tbody th { font-weight: 650; }
 tbody tr:nth-child(even) { background: #f9fbfd; }
 td:last-child, thead th:last-child { background: var(--accent-soft); color: var(--accent-dark); font-weight: 750; }
-.section > .table-note { max-width: none; font-size: .9rem; }
+.section > .table-note { font-size: .9rem; }
 
 .ablation-result { margin-top: clamp(1.8rem, 4vw, 2.9rem); }
 .ablation-result > h3 { margin-bottom: .8rem; font-size: 1.25rem; }
@@ -266,6 +265,14 @@ td:last-child, thead th:last-child { background: var(--accent-soft); color: var(
 .result-explanation { padding-left: 1rem; border-left: 2px solid #8aa8cb; color: var(--muted); }
 .result-explanation p + p { margin-top: .7rem; }
 .result-explanation strong { color: var(--ink); }
+
+.section > p:not(.lede, .table-note),
+.method-steps > article > p,
+.result-explanation > p {
+  text-align: justify;
+  text-align-last: start;
+  hyphens: auto;
+}
 .comparison { margin-top: clamp(1.5rem, 4vw, 2.65rem); }
 .comparison-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .comparison-video figcaption { color: var(--ink); font-weight: 700; }
