@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PACE aligns a robot's demonstration context with its realized execution progress for stage-consistent long-horizon manipulation.">
+  <meta name="citation_title" content="PACE: Stage-Consistent Long-Horizon Robot Manipulation via Progress-Aligned Context for Execution">
+  <meta name="theme-color" content="#f3f8f6">
+  <title>PACE · Progress-Aligned Context for Execution</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="demos.js" defer></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="hero">
+    <div class="shell">
+      <p class="hero-kicker">Demonstration-conditioned manipulation</p>
+      <h1><span class="project-name">PACE</span>: Stage-Consistent <span class="keep-together">Long-Horizon</span> Robot Manipulation via <span class="keep-together">Progress-Aligned</span> Context for Execution</h1>
+      <div class="actions">
+        <span class="button button-unavailable">Paper PDF <span class="release-status">Coming soon</span></span>
+        <span class="button button-unavailable">Code <span class="release-status">Coming soon</span></span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="section-nav" aria-label="On this page">
+    <div class="shell">
+      <a href="#method">Method</a>
+      <a href="#simulation">Simulation</a>
+      <a href="#real-world">Real world</a>
+      <a href="#ablation">Ablation</a>
+    </div>
+  </nav>
+
+  <main class="shell" id="content">
+    <section class="section" id="abstract" aria-labelledby="abstract-title">
+      <h2 id="abstract-title">Abstract</h2>
+      <figure class="research-figure">
+        <a href="assets/stage-confusion.png"><img src="assets/stage-confusion.png" alt="Two stages of Block Routing look similar but require different actions. Matching the earlier stage causes the robot to repeat a completed move." width="2294" height="504" loading="lazy"></a>
+        <figcaption>Stage confusion can cause the robot to repeat a completed action when observations from different stages look alike.</figcaption>
+      </figure>
+      <p>Demonstration-conditioned policies can confuse stages when similar observations recur or when execution and demonstration proceed at different speeds. PACE compresses the demonstration into ordered multimodal tokens and uses training-only dual-edge attention supervision to expose its stage structure. At execution time, an episode-local fast-weight memory encodes realized transitions and guides cross-attention to produce a progress-aligned context. The paper evaluates this approach on LIBERO-Gen, simulated Block Routing, and real-robot Block Routing.</p>
+    </section>
+
+    <section class="section" id="method" aria-labelledby="method-title">
+      <h2 id="method-title">Method</h2>
+      <p class="lede">Use execution history to find the relevant stage of a demonstration.</p>
+      <p>A robot can return to the same-looking state after completing a stage. PACE uses the actions already executed and their outcomes to retrieve the demonstration context for the next action.</p>
+      <figure class="research-figure">
+        <a href="assets/pace-architecture.png"><img src="assets/pace-architecture.png" alt="PACE architecture with a demonstration prompt encoder, a progress-alignment decoder that writes and reads episode-local fast weights, and a diffusion action expert. A dual-edge detector supervises cross-attention during training." width="2652" height="1026"></a>
+        <figcaption><span>The decoder uses episode-local fast weights to modulate the observation query before cross-attention. The resulting context conditions a shared diffusion action expert.</span><a href="assets/pace-architecture.png">View full resolution</a></figcaption>
+      </figure>
+      <div class="method-steps">
+        <article>
+          <h3>Demonstration prompt encoder</h3>
+          <figure class="research-figure">
+            <a href="assets/demo-prompt-encoder.png"><img src="assets/demo-prompt-encoder.png" alt="The initial image, actions, and proprioception for each 20-step demonstration chunk are pooled into an ordered sequence of prompt tokens." width="1760" height="650" loading="lazy"></a>
+            <figcaption><span>Attention pooling combines the initial image with the action and proprioception sequences in each 20-step chunk. The resulting prompt tokens retain the demonstration order.</span><a href="assets/demo-prompt-encoder.png" aria-label="View the demonstration prompt encoder at full resolution">View full resolution</a></figcaption>
+          </figure>
+        </article>
+        <article>
+          <h3>Dual-edge attention supervision</h3>
+          <figure class="research-figure">
+            <a href="assets/dual-edge-detector.png"><img src="assets/dual-edge-detector.png" alt="The dual-edge detector aligns boundaries from prompt and target actions and creates soft labels at the two edges of the relevant prompt interval." width="1806" height="636" loading="lazy"></a>
+            <figcaption><span>During training, monotonic alignment matches boundaries detected in the prompt and target actions. Soft labels supervise attention at both edges of the relevant interval.</span><a href="assets/dual-edge-detector.png" aria-label="View the dual-edge detector at full resolution">View full resolution</a></figcaption>
+          </figure>
+        </article>
+        <article class="method-execution"><h3>Align context during execution</h3><p>Update fast weights from realized action–observation transitions, then replan with a shared diffusion action expert. The policy requires no test-time stage labels.</p></article>
+      </div>
+    </section>
+
+    <div id="demos">
+    <section class="section" id="simulation" aria-labelledby="sim-title">
+      <h2 id="sim-title">Simulation Experiments</h2>
+      <p class="lede">Evaluate unseen task compositions and repeated returns to a shared home region.</p>
+      <p>Each LIBERO-Gen suite contains ten unseen task compositions. Simulated Block Routing contains three 2-step routes and nine 4-step routes. Across both settings, each task is evaluated over 10 rollouts per method.</p>
+      <div class="experiments" data-tabs>
+        <div class="tabs" aria-label="Simulation tasks">
+          <a id="tab-demo-goal" href="#demo-goal">Goal Chain</a>
+          <a id="tab-demo-spatial" href="#demo-spatial">Spatial Combination</a>
+          <a id="tab-demo-sim-2" href="#demo-sim-2">2-step routing</a>
+          <a id="tab-demo-sim" href="#demo-sim">4-step routing</a>
+        </div>
+        <article class="experiment" id="demo-goal">
+          <div class="experiment-heading">
+            <div><h3>LIBERO-Gen Goal Chain</h3><p>Complete a prerequisite interaction and then an object-centric goal.</p></div>
+            <div class="experiment-metric"><strong>94.0%</strong><span>PACE success rate</span></div>
+          </div>
+          <figure class="video-frame">
+            <video controls muted playsinline preload="none" poster="assets/goal-chain.jpg" width="1280" height="520" aria-label="LIBERO-Gen Goal Chain at 2× speed">
+              <source src="assets/goal-chain.mp4" type="video/mp4">
+            </video>
+            <figcaption><span>Representative PACE rollouts · 2× playback</span><a href="assets/goal-chain.mp4">Open MP4</a></figcaption>
+          </figure>
+        </article>
+        <article class="experiment" id="demo-spatial">
+          <div class="experiment-heading">
+            <div><h3>LIBERO-Gen Spatial Combination</h3><p>Manipulate familiar objects in unseen combinations of target locations.</p></div>
+            <div class="experiment-metric"><strong>83.3%</strong><span>PACE success rate</span></div>
+          </div>
+          <figure class="video-frame">
+            <video controls muted playsinline preload="none" poster="assets/spatial-combination.jpg" width="1280" height="520" aria-label="LIBERO-Gen Spatial Combination at 2× speed">
+              <source src="assets/spatial-combination.mp4" type="video/mp4">
+            </video>
+            <figcaption><span>Representative PACE rollouts · 2× playback</span><a href="assets/spatial-combination.mp4">Open MP4</a></figcaption>
+          </figure>
+        </article>
+        <article class="experiment" id="demo-sim-2">
+          <div class="experiment-heading">
+            <div><h3>Simulated 2-step Block Routing</h3><p>Visit one of three target regions and return home.</p></div>
+            <div class="experiment-metric"><strong>73.3%</strong><span>PACE success rate</span></div>
+          </div>
+          <figure class="video-frame">
+            <video controls muted playsinline preload="none" poster="assets/sim-routing-2-step.jpg" width="1080" height="360" aria-label="Simulated 2-step Block Routing at 2× speed">
+              <source src="assets/sim-routing-2-step.mp4" type="video/mp4">
+            </video>
+            <figcaption><span>Representative PACE rollouts · 2× playback</span><a href="assets/sim-routing-2-step.mp4">Open MP4</a></figcaption>
+          </figure>
+        </article>
+        <article class="experiment" id="demo-sim">
+          <div class="experiment-heading">
+            <div><h3>Simulated 4-step Block Routing</h3><p>Complete an ordered pair of routes through the common home region.</p></div>
+            <div class="experiment-metric"><strong>37.8%</strong><span>PACE success rate</span></div>
+          </div>
+          <figure class="video-frame is-square">
+            <video controls muted playsinline preload="none" poster="assets/sim-routing.jpg" width="720" height="720" aria-label="Simulated 4-step Block Routing at 2× speed">
+              <source src="assets/sim-routing.mp4" type="video/mp4">
+            </video>
+            <figcaption><span>Representative PACE rollouts · 2× playback</span><a href="assets/sim-routing.mp4">Open MP4</a></figcaption>
+          </figure>
+        </article>
+      </div>
+      <div class="table-wrap" id="results">
+        <table>
+          <caption>Mean complete-task success across simulation tasks</caption>
+          <thead><tr><th scope="col">Benchmark</th><th scope="col">BPP</th><th scope="col">π₀.₅</th><th scope="col">PACE</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">LIBERO-Gen Goal Chain</th><td>88.9%</td><td>79.2%</td><td>94.0%</td></tr>
+            <tr><th scope="row">LIBERO-Gen Spatial Combination</th><td>79.1%</td><td>79.9%</td><td>83.3%</td></tr>
+            <tr><th scope="row">2-step Block Routing</th><td>33.3%</td><td>13.3%</td><td>73.3%</td></tr>
+            <tr><th scope="row">4-step Block Routing</th><td>3.3%</td><td>0.2%</td><td>37.8%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">BPP is Behavior Prompting Policy. A rollout succeeds when the robot completes every stage in order.</p>
+    </section>
+
+    <section class="section" id="real-world" aria-labelledby="real-title">
+      <h2 id="real-title">Real-World Experiments</h2>
+      <p class="lede">Route a block through colored targets and return it home between visits.</p>
+      <p>We evaluate three single-target routes and nine ordered two-target routes. Each task uses 15 training demonstrations and 10 evaluation rollouts per method.</p>
+      <div class="experiments" data-tabs>
+        <div class="tabs" aria-label="Real-world Block Routing tasks">
+          <a id="tab-demo-real-2" href="#demo-real-2">2-step routing</a>
+          <a id="tab-demo-real" href="#demo-real">4-step routing</a>
+        </div>
+        <article class="experiment" id="demo-real-2">
+          <div class="experiment-heading">
+            <div><h3>2-step Block Routing</h3><p>Visit one target and return the block home.</p></div>
+            <div class="experiment-metric"><strong>90.0%</strong><span>PACE success rate</span></div>
+          </div>
+          <figure class="video-frame">
+            <video controls muted playsinline preload="none" poster="assets/real-routing-2-step.jpg" width="1080" height="360" aria-label="2-step Block Routing at 8× speed">
+              <source src="assets/real-routing-2-step.mp4" type="video/mp4">
+            </video>
+            <figcaption><span>Representative PACE rollouts · 8× playback</span><a href="assets/real-routing-2-step.mp4">Open MP4</a></figcaption>
+          </figure>
+        </article>
+        <article class="experiment" id="demo-real">
+          <div class="experiment-heading">
+            <div><h3>4-step Block Routing</h3><p>Visit two targets in order, returning home after each visit.</p></div>
+            <div class="experiment-metric"><strong>43.3%</strong><span>PACE success rate</span></div>
+          </div>
+          <figure class="video-frame is-square">
+            <video controls muted playsinline preload="none" poster="assets/real-routing.jpg" width="720" height="720" aria-label="4-step Block Routing at 8× speed">
+              <source src="assets/real-routing.mp4" type="video/mp4">
+            </video>
+            <figcaption><span>Representative PACE rollouts · 8× playback</span><a href="assets/real-routing.mp4">Open MP4</a></figcaption>
+          </figure>
+        </article>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <caption>Mean complete-task success across real-world routes</caption>
+          <thead><tr><th scope="col">Benchmark</th><th scope="col">BPP</th><th scope="col">PACE</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">2-step Block Routing</th><td>40.0%</td><td>90.0%</td></tr>
+            <tr><th scope="row">4-step Block Routing</th><td>3.44%</td><td>43.3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    </div>
+
+    <section class="section" id="ablation" aria-labelledby="ablation-title">
+      <h2 id="ablation-title">Ablation</h2>
+      <p class="lede">Fast-weight memory helps attention track execution progress.</p>
+      <article class="ablation-result" aria-labelledby="outcomes-title">
+        <h3 id="outcomes-title">Rollout outcomes</h3>
+        <div class="result-grid">
+          <figure class="research-figure">
+            <a href="assets/ablation-outcomes.png"><img src="assets/ablation-outcomes.png" alt="In 30 rollouts per method, BPP succeeds 5 times, support only 1 time, dual-edge only 3 times, and full PACE 22 times. Wrong-stage failures are 14, 17, 16, and 1, respectively." width="1850" height="1244" loading="lazy"></a>
+            <figcaption><span>Outcomes from the separate 2-step Block Routing ablation, with 30 rollouts per method. Bar labels give exact episode counts.</span><a href="assets/ablation-outcomes.png" aria-label="View rollout outcomes at full resolution">View full resolution</a></figcaption>
+          </figure>
+          <div class="result-explanation">
+            <p><strong>Full PACE completes 22 of 30 rollouts (73.3%), compared with 5 of 30 for BPP (16.7%).</strong> Wrong-stage failures fall from 14 to 1, and the other seven failures with full PACE are wrong grasps.</p>
+            <p>Effective-support regularization alone and dual-edge supervision alone yield 17 and 16 wrong-stage failures, respectively. These results support combining stage-structure supervision with memory of the current rollout.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="ablation-result" aria-labelledby="tracking-title">
+        <h3 id="tracking-title">Attention during execution</h3>
+        <figure class="research-figure">
+          <a href="assets/attention-tracking.png"><img src="assets/attention-tracking.png" alt="Three attention heatmaps for BPP, PACE without fast-weight memory, and full PACE. BPP attention is diffuse, the no-memory variant oscillates, and full PACE progresses toward later demonstration chunks." width="2560" height="1128" loading="lazy"></a>
+          <figcaption><span>Attention over demonstration chunks in representative 2-step rollouts. The red line marks the attention center and the dashed lines mark execution-stage boundaries.</span><a href="assets/attention-tracking.png">View full resolution</a></figcaption>
+        </figure>
+      </article>
+
+      <article class="ablation-result" aria-labelledby="history-title">
+        <h3 id="history-title">Counterfactual execution history</h3>
+        <div class="result-grid">
+          <figure class="research-figure">
+            <a href="assets/history-conditioning.png"><img src="assets/history-conditioning.png" alt="With the current observation and demonstration fixed, the second approach history moves attention toward later prompt chunks. Reset history moves it toward the earlier chunks. A separate example compares matched, earlier, later, and shuffled histories." width="1626" height="1320" loading="lazy"></a>
+            <figcaption><span>The black dot marks the attention center. Red lines mark the matched stage boundaries.</span><a href="assets/history-conditioning.png" aria-label="View counterfactual execution history at full resolution">View full resolution</a></figcaption>
+          </figure>
+          <div class="result-explanation">
+            <p><strong>The current observation and demonstration stay fixed while the execution history changes.</strong> In the upper panel, using the history from the second approach to the block moves attention to later prompt chunks. Resetting memory moves attention back toward the early chunks.</p>
+            <p>In the lower example, matched history concentrates attention inside the corresponding stage boundaries. Earlier and later histories shift the center in their respective directions. Shuffling retains a similar center in this example while changing the attention distribution.</p>
+          </div>
+        </div>
+      </article>
+
+      <div class="comparison" data-comparison>
+        <div class="comparison-grid">
+          <figure class="video-frame comparison-video">
+            <figcaption>PACE without fast-weight memory</figcaption>
+            <video controls muted playsinline preload="none" poster="assets/ablation-no-memory.jpg" width="1616" height="1488" aria-label="PACE without fast-weight memory rollout in 2-step Block Routing">
+              <source src="assets/ablation-no-memory.mp4" type="video/mp4">
+            </video>
+          </figure>
+          <figure class="video-frame comparison-video">
+            <figcaption>Full PACE</figcaption>
+            <video controls muted playsinline preload="none" poster="assets/ablation-pace.jpg" width="1616" height="1488" aria-label="Full PACE rollout in 2-step Block Routing">
+              <source src="assets/ablation-pace.mp4" type="video/mp4">
+            </video>
+          </figure>
+        </div>
+        <div class="comparison-controls" hidden>
+          <button class="button button-primary" type="button" data-replay>Replay both</button>
+          <button class="button" type="button" data-pause>Pause both</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-row">
+      <span>PACE</span>
+      <div><a href="#top">Back to top</a></div>
+    </div>
+  </footer>
+</body>
+</html>
