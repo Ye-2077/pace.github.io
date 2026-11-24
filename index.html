@@ -7,7 +7,7 @@
   <meta name="citation_title" content="PACE: Stage-Consistent Long-Horizon Robot Manipulation via Progress-Aligned Context for Execution">
   <meta name="theme-color" content="#ffffff">
   <title>PACE · Progress-Aligned Context for Execution</title>
-  <link rel="stylesheet" href="style.css?v=4eaf066d7c51">
+  <link rel="stylesheet" href="style.css?v=ae81aae8ae64">
   <script src="demos.js" defer></script>
 </head>
 <body id="top">
@@ -44,27 +44,38 @@
     <section class="section" id="method" aria-labelledby="method-title">
       <h2 id="method-title">Method</h2>
       <p class="lede">Use execution history to find the relevant stage of a demonstration.</p>
-      <p>A robot can return to the same-looking state after completing a stage. PACE uses the actions already executed and their outcomes to retrieve the demonstration context for the next action.</p>
+      <p>PACE is a closed-loop policy conditioned on one complete perception–action demonstration. It uses the current observation and the transitions the robot has already executed to retrieve the relevant interval of the demonstration, even when the same scene recurs or the robot and demonstrator move at different speeds.</p>
       <figure class="research-figure">
         <a href="assets/pace-architecture.png"><img src="assets/pace-architecture.png" alt="PACE architecture with a demonstration prompt encoder, a progress-alignment decoder that writes and reads episode-local fast weights, and a diffusion action expert. A dual-edge detector supervises cross-attention during training." width="2652" height="1026"></a>
-        <figcaption><span>The decoder uses episode-local fast weights to modulate the observation query before cross-attention. The resulting context conditions a shared diffusion action expert.</span><a href="assets/pace-architecture.png">View full resolution</a></figcaption>
+        <figcaption><span>The demonstration encoder provides ordered prompt tokens. The decoder reads episode-local fast weights, then cross-attends to those tokens. A shared diffusion action expert uses the resulting context and current observation.</span><a href="assets/pace-architecture.png">View full resolution</a></figcaption>
       </figure>
       <div class="method-steps">
         <article>
           <h3>Demonstration prompt encoder</h3>
           <figure class="research-figure">
             <a href="assets/demo-prompt-encoder.png"><img src="assets/demo-prompt-encoder.png" alt="The initial image, actions, and proprioception for each 20-step demonstration chunk are pooled into an ordered sequence of prompt tokens." width="1760" height="650" loading="lazy"></a>
-            <figcaption><span>Attention pooling combines the initial image with the action and proprioception sequences in each 20-step chunk. The resulting prompt tokens retain the demonstration order.</span><a href="assets/demo-prompt-encoder.png" aria-label="View the demonstration prompt encoder at full resolution">View full resolution</a></figcaption>
+            <figcaption><span>Each 20-step demonstration chunk produces one prompt token with a learned temporal position embedding.</span><a href="assets/demo-prompt-encoder.png" aria-label="View the demonstration prompt encoder at full resolution">View full resolution</a></figcaption>
           </figure>
+          <p>At 20 Hz, each chunk spans about one second. A pretrained CLIP ViT encodes the first frame from each camera, linear layers embed the end-effector poses and gripper states, and an MLP encodes the actions. Attention pooling fuses these features into one ordered token.</p>
         </article>
         <article>
           <h3>Dual-edge attention supervision</h3>
           <figure class="research-figure">
             <a href="assets/dual-edge-detector.png"><img src="assets/dual-edge-detector.png" alt="The dual-edge detector aligns boundaries from prompt and target actions and creates soft labels at the two edges of the relevant prompt interval." width="1806" height="636" loading="lazy"></a>
-            <figcaption><span>During training, monotonic alignment matches boundaries detected in the prompt and target actions. Soft labels supervise attention at both edges of the relevant interval.</span><a href="assets/dual-edge-detector.png" aria-label="View the dual-edge detector at full resolution">View full resolution</a></figcaption>
+            <figcaption><span>Two boundary-centered Gaussian distributions provide a soft target over the prompt chunks. The target supervises both aggregated attention and individual observation queries.</span><a href="assets/dual-edge-detector.png" aria-label="View the dual-edge detector at full resolution">View full resolution</a></figcaption>
           </figure>
+          <p>During training, changes in motion and gripper state identify candidate boundaries in the demonstration and execution trajectories. Dynamic programming aligns these boundaries in order while allowing different stage durations and missed detections.</p>
         </article>
-        <article class="method-execution"><h3>Align context during execution</h3><p>Update fast weights from realized action–observation transitions, then replan with a shared diffusion action expert. The policy requires no test-time stage labels.</p></article>
+        <article class="method-execution">
+          <h3>Stateful progress alignment</h3>
+          <p>Each rollout starts from learned initial weights for a fixed-size, two-layer MLP. After a completed 12-step execution segment, PACE encodes the executed actions and the start and end camera observations. A local key–value reconstruction update writes this transition into the fast weights.</p>
+          <p>A gated readout from memory modifies the current observation queries before they attend to the full demonstration. The same observation can therefore retrieve different prompt chunks under different execution histories.</p>
+        </article>
+        <article class="method-execution">
+          <h3>Unified diffusion action expert</h3>
+          <p>One conditional 1D U-Net predicts an action chunk from the current observation and progress-aligned context. Training combines diffusion denoising, dual-edge attention supervision, and effective-support regularization to keep attention concentrated on relevant prompt chunks.</p>
+          <p>At test time, the policy executes part of the predicted chunk and replans after incorporating the observed outcome. The alignment and action generation use the demonstration and realized history without stage labels.</p>
+        </article>
       </div>
     </section>
 

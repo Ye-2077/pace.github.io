@@ -179,7 +179,8 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
   border-left: 3px solid #8aa8cb;
   background: var(--soft);
 }
-.method-execution p { max-width: 86ch; margin-top: .35rem; color: var(--muted); }
+.method-steps > article > p { margin-top: .65rem; color: var(--muted); }
+.method-execution p { max-width: 86ch; }
 
 .experiments {
   margin-top: 1.35rem;
