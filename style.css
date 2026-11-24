@@ -124,8 +124,8 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
   text-wrap: balance;
 }
 .section h3 { font-size: 1.15rem; font-weight: 750; line-height: 1.36; letter-spacing: -.02em; }
-.section > p { max-width: 79ch; margin: .65rem auto 0; color: var(--muted); }
-.section > .lede { margin-top: .9rem; color: var(--ink); font-weight: 650; font-size: 1.08rem; text-align: center; }
+.section > p { max-width: 79ch; margin-top: .65rem; color: var(--muted); }
+.section > .lede { margin-top: .9rem; color: var(--ink); font-weight: 650; font-size: 1.08rem; }
 #abstract > p { max-width: none; margin-top: 1.15rem; color: var(--ink); line-height: 1.75; }
 #abstract .research-figure { padding: .85rem; box-shadow: none; }
 
