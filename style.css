@@ -138,21 +138,21 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
 }
 .research-figure > a { display: block; border-radius: .3rem; }
 .research-figure figcaption, .video-frame figcaption {
+  color: var(--muted);
+  font-size: .9rem;
+}
+.video-frame figcaption {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   flex-wrap: wrap;
   gap: .32rem 1rem;
-  color: var(--muted);
-  font-size: .9rem;
 }
 .research-figure figcaption {
   margin-top: .95rem;
   padding-top: .8rem;
   border-top: 1px solid var(--line);
 }
-.research-figure figcaption span { flex: 1 1 69%; }
-.research-figure figcaption a { font-weight: 650; }
 
 .method-steps {
   display: grid;

@@ -7,7 +7,7 @@
   <meta name="citation_title" content="PACE: Stage-Consistent Long-Horizon Robot Manipulation via Progress-Aligned Context for Execution">
   <meta name="theme-color" content="#ffffff">
   <title>PACE · Progress-Aligned Context for Execution</title>
-  <link rel="stylesheet" href="style.css?v=44724e50d79f">
+  <link rel="stylesheet" href="style.css?v=916fcacfeb5b">
   <script src="demos.js" defer></script>
 </head>
 <body id="top">
@@ -47,14 +47,14 @@
       <p>PACE is a closed-loop policy conditioned on one complete perception–action demonstration. It uses the current observation and the transitions the robot has already executed to retrieve the relevant interval of the demonstration, even when the same scene recurs or the robot and demonstrator move at different speeds.</p>
       <figure class="research-figure">
         <a href="assets/pace-architecture.png"><img src="assets/pace-architecture.png" alt="PACE architecture with a demonstration prompt encoder, a progress-alignment decoder that writes and reads episode-local fast weights, and a diffusion action expert. A dual-edge detector supervises cross-attention during training." width="2652" height="1026"></a>
-        <figcaption><span>The demonstration encoder provides ordered prompt tokens. The decoder reads episode-local fast weights, then cross-attends to those tokens. A shared diffusion action expert uses the resulting context and current observation.</span><a href="assets/pace-architecture.png">View full resolution</a></figcaption>
+        <figcaption>The demonstration encoder provides ordered prompt tokens. The decoder reads episode-local fast weights, then cross-attends to those tokens. A shared diffusion action expert uses the resulting context and current observation.</figcaption>
       </figure>
       <div class="method-steps">
         <article>
           <h3>Demonstration prompt encoder</h3>
           <figure class="research-figure">
             <a href="assets/demo-prompt-encoder.png"><img src="assets/demo-prompt-encoder.png" alt="The initial image, actions, and proprioception for each 20-step demonstration chunk are pooled into an ordered sequence of prompt tokens." width="1760" height="650" loading="lazy"></a>
-            <figcaption><span>Each 20-step demonstration chunk produces one prompt token with a learned temporal position embedding.</span><a href="assets/demo-prompt-encoder.png" aria-label="View the demonstration prompt encoder at full resolution">View full resolution</a></figcaption>
+            <figcaption>Each 20-step demonstration chunk produces one prompt token with a learned temporal position embedding.</figcaption>
           </figure>
           <p>At 20 Hz, each chunk spans about one second. A pretrained CLIP ViT encodes the first frame from each camera, linear layers embed the end-effector poses and gripper states, and an MLP encodes the actions. Attention pooling fuses these features into one ordered token.</p>
         </article>
@@ -62,7 +62,7 @@
           <h3>Dual-edge attention supervision</h3>
           <figure class="research-figure">
             <a href="assets/dual-edge-detector.png"><img src="assets/dual-edge-detector.png" alt="The dual-edge detector aligns boundaries from prompt and target actions and creates soft labels at the two edges of the relevant prompt interval." width="1806" height="636" loading="lazy"></a>
-            <figcaption><span>Two boundary-centered Gaussian distributions provide a soft target over the prompt chunks. The target supervises both aggregated attention and individual observation queries.</span><a href="assets/dual-edge-detector.png" aria-label="View the dual-edge detector at full resolution">View full resolution</a></figcaption>
+            <figcaption>Two boundary-centered Gaussian distributions provide a soft target over the prompt chunks. The target supervises both aggregated attention and individual observation queries.</figcaption>
           </figure>
           <p>During training, changes in motion and gripper state identify candidate boundaries in the demonstration and execution trajectories. Dynamic programming aligns these boundaries in order while allowing different stage durations and missed detections.</p>
         </article>
@@ -210,7 +210,7 @@
         <div class="result-grid">
           <figure class="research-figure">
             <a href="assets/ablation-outcomes.png"><img src="assets/ablation-outcomes.png" alt="In 30 rollouts per method, BPP succeeds 5 times, support only 1 time, dual-edge only 3 times, and full PACE 22 times. Wrong-stage failures are 14, 17, 16, and 1, respectively." width="1850" height="1244" loading="lazy"></a>
-            <figcaption><span>Outcomes from the separate 2-step Block Routing ablation, with 30 rollouts per method. Bar labels give exact episode counts.</span><a href="assets/ablation-outcomes.png" aria-label="View rollout outcomes at full resolution">View full resolution</a></figcaption>
+            <figcaption>Outcomes from the separate 2-step Block Routing ablation, with 30 rollouts per method. Bar labels give exact episode counts.</figcaption>
           </figure>
           <div class="result-explanation">
             <p><strong>Full PACE completes 22 of 30 rollouts (73.3%), compared with 5 of 30 for BPP (16.7%).</strong> Wrong-stage failures fall from 14 to 1, and the other seven failures with full PACE are wrong grasps.</p>
@@ -223,7 +223,7 @@
         <h3 id="tracking-title">Attention during execution</h3>
         <figure class="research-figure">
           <a href="assets/attention-tracking.png"><img src="assets/attention-tracking.png" alt="Three attention heatmaps for BPP, PACE without fast-weight memory, and full PACE. BPP attention is diffuse, the no-memory variant oscillates, and full PACE progresses toward later demonstration chunks." width="2560" height="1128" loading="lazy"></a>
-          <figcaption><span>Attention over demonstration chunks in representative 2-step rollouts. The red line marks the attention center and the dashed lines mark execution-stage boundaries.</span><a href="assets/attention-tracking.png">View full resolution</a></figcaption>
+          <figcaption>Attention over demonstration chunks in representative 2-step rollouts. The red line marks the attention center and the dashed lines mark execution-stage boundaries.</figcaption>
         </figure>
       </article>
 
@@ -232,7 +232,7 @@
         <div class="result-grid">
           <figure class="research-figure">
             <a href="assets/history-conditioning.png"><img src="assets/history-conditioning.png" alt="With the current observation and demonstration fixed, the second approach history moves attention toward later prompt chunks. Reset history moves it toward the earlier chunks. A separate example compares matched, earlier, later, and shuffled histories." width="1626" height="1320" loading="lazy"></a>
-            <figcaption><span>The black dot marks the attention center. Red lines mark the matched stage boundaries.</span><a href="assets/history-conditioning.png" aria-label="View counterfactual execution history at full resolution">View full resolution</a></figcaption>
+            <figcaption>The black dot marks the attention center. Red lines mark the matched stage boundaries.</figcaption>
           </figure>
           <div class="result-explanation">
             <p><strong>The current observation and demonstration stay fixed while the execution history changes.</strong> In the upper panel, using the history from the second approach to the block moves attention to later prompt chunks. Resetting memory moves attention back toward the early chunks.</p>
