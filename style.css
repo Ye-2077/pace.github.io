@@ -112,8 +112,7 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
   border-top: 1px solid var(--line);
 }
 #abstract {
-  width: min(100%, 54rem);
-  margin: clamp(1.65rem, 4vw, 3.15rem) auto 0;
+  margin-top: clamp(1.65rem, 4vw, 3.15rem);
   padding-top: 0;
   border-top: 0;
 }
