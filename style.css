@@ -114,10 +114,8 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
 #abstract {
   width: min(100%, 54rem);
   margin: clamp(1.65rem, 4vw, 3.15rem) auto 0;
-  padding: clamp(1rem, 3vw, 2.15rem);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--soft);
+  padding-top: 0;
+  border-top: 0;
 }
 .section h2 {
   font: 700 clamp(1.75rem, 3vw, 2.6rem)/1.2 var(--serif);
