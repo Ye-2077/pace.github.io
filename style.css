@@ -106,7 +106,11 @@ button.button-primary:hover { background: var(--accent-dark); color: #fff; }
 }
 .section-nav a:hover { color: var(--accent-dark); background: var(--accent-soft); }
 
-.section { padding-top: clamp(3rem, 6.75vw, 5.6rem); }
+.section {
+  margin-top: clamp(1.5rem, 3.25vw, 2.7rem);
+  padding-top: clamp(1.5rem, 3.5vw, 2.9rem);
+  border-top: 1px solid var(--line);
+}
 #abstract {
   width: min(100%, 54rem);
   margin: clamp(1.65rem, 4vw, 3.15rem) auto 0;
